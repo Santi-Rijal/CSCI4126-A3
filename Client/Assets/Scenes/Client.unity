@@ -757,6 +757,7 @@ MonoBehaviour:
   connectUI: {fileID: 282272976}
   controlsUI: {fileID: 7932149}
   error: {fileID: 1724716126}
+  inputField: {fileID: 798675749}
 --- !u!1 &401649886
 GameObject:
   m_ObjectHideFlags: 0
@@ -1388,7 +1389,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   port: 7777
-  ip: 127.0.0.1
 --- !u!1 &1078815179
 GameObject:
   m_ObjectHideFlags: 0

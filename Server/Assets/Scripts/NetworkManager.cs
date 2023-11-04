@@ -75,6 +75,25 @@ public class NetworkManager : MonoBehaviour
         // Instantiate and start the server
         Server = new Server();
         Server.Start(port, maxClientCount);
+        
+        Server.MessageReceived += ServerOnMessageReceived;
+        Server.ClientConnected += ServerOnClientConnected;
+    }
+
+    private void ServerOnClientConnected(object sender, ServerConnectedEventArgs e) {
+        // Spawn Character.
+    }
+
+    private void ServerOnMessageReceived(object sender, MessageReceivedEventArgs e) {
+        var message = e.Message.GetString();
+
+        if (message.Equals("Space Button clicked")) {
+            // Handle space button click.
+        }
+        
+        if (message.Equals("Reset Button clicked")) {
+            // Handle reset button click.
+        }
     }
 
     // Update server logic on FixedUpdate
