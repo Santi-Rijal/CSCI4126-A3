@@ -35,7 +35,6 @@ public class NetworkManager : MonoBehaviour {
     public Client Client { get; private set; }  // Client get and set methods.
 
     [SerializeField] private ushort port;   // Port to run on.
-    [SerializeField] private string ip; // Ip to connect on.
 
     // Set singleton.
     private void Awake() {
@@ -62,6 +61,8 @@ public class NetworkManager : MonoBehaviour {
 
     // Method to connect client.
     public void Connect() {
+        var ip = UIManager.Singleton.GetUserIP(); // Get user ip from UI.
+        
         Client.Connect($"{ip}:{port}"); // Call the connect method of client with the ip and port.
     }
 

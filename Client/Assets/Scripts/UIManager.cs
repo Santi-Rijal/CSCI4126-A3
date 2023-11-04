@@ -13,6 +13,9 @@ public class UIManager : MonoBehaviour {
     [SerializeField] private GameObject connectUI;  // Connection UI.
     [SerializeField] private GameObject controlsUI;  // Controls UI.
     [SerializeField] private TextMeshProUGUI error;  // Error text.
+    [SerializeField] private TMP_InputField inputField; // Input field for IP address.
+
+    private string _userIP;
     
     // Create a new singleton if it already doesn't exists else destroy it.
     public static UIManager Singleton {
@@ -42,6 +45,12 @@ public class UIManager : MonoBehaviour {
 
     // A subscription method for connected event.
     private void ClientOnConnected(object sender, EventArgs e) {
+        
+        // Send a message indicating the users IP to the server.
+        // Message message = Message.Create(MessageSendMode.Reliable, ClientToServerId.name);
+        // message.Add(iP);
+        // NetworkManager.Singleton.Client.Send(message);
+        
         connectUI.SetActive(false); // Hide connect UI screen.
         controlsUI.SetActive(true); // Show controls UI screen.
     }
@@ -59,13 +68,20 @@ public class UIManager : MonoBehaviour {
 
     // Method to handle connect button click.
     public void ClickedConnect() {
+        _userIP = inputField.text;
+        
         NetworkManager.Singleton.Connect(); // Try to connect to server.
         error.text = "Connecting....";
     }
     
-    // If failed to connect or disconnected, show thw connect screen UI.
+    // If failed to connect or disconnected, show the connect screen UI.
     public void BackToMain() {
         connectUI.SetActive(true);  // Show connect screen.
         controlsUI.SetActive(false); // hide controls UI screen.
+    }
+
+    // Get method for user IP.
+    public string GetUserIP() {
+        return _userIP;
     }
 }
