@@ -14,22 +14,11 @@ using Riptide.Utils;
  * -----------------------------------
  */
 
-// Enumeration of message IDs sent from server to client
-public enum ServerToClientId : ushort
-{
-    SpawnPlayer = 1,
-}
-
-// Enumeration of message IDs sent from client to server
-public enum ClientToServerId : ushort
-{
-    PlayerName = 1,
-}
-
-public class NetworkManager : MonoBehaviour
-{
+public class NetworkManager : MonoBehaviour {
+    
     public GameObject playerPrefab;
     public GameObject timer;
+    public Transform spawnPoint;
 
     [SerializeField] private Flipper flipper;
     [SerializeField] private Flipper spoon;
@@ -37,15 +26,14 @@ public class NetworkManager : MonoBehaviour
 
     // Singleton pattern for NetworkManager. Ensures only one instance exists.
     private static NetworkManager _singleton;
-    public static NetworkManager Singleton
-    {
+    public static NetworkManager Singleton {
         get => _singleton;
-        private set
-        {
-            if (_singleton == null)
+        
+        private set {
+            if (_singleton == null) {
                 _singleton = value;
-            else if (_singleton != value)
-            {
+            }
+            else if (_singleton != value) {
                 Debug.Log($"{nameof(NetworkManager)} instance already exists, destroying object!");
                 Destroy(value);
             }
@@ -60,14 +48,13 @@ public class NetworkManager : MonoBehaviour
     public Server Server { get; private set; }
 
     // Set Singleton instance on Awake (before Start method)
-    private void Awake()
-    {
+    private void Awake() {
         Singleton = this;
+        DeactivateHammerSwing();
     }
 
     // Initialization method called on Start
-    private void Start()
-    {
+    private void Start() {
         // Disable vertical sync and set target frame rate to 30fps
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = 30;
@@ -88,31 +75,27 @@ public class NetworkManager : MonoBehaviour
 
     private void ServerOnClientConnected(object sender, ServerConnectedEventArgs e) {
         // Instantiate or enable the player character
-        GameObject player = Instantiate(playerPrefab);
-
-        SimulateReset();
+        Instantiate(playerPrefab, spawnPoint.position, spawnPoint.rotation);
     }
-
+    
     [MessageHandler((ushort)1)]
-    private static void ServerOnMessageReceived(ushort fromClientID, Message message) 
-    {
+    private static void ServerOnMessageReceived(ushort fromClientID, Message message) {
         var interaction = message.GetString();
 
-        if (interaction.Equals("Thump called.")) 
-        {
+        if (interaction.Equals("Thump called.")) {
             // Simulate thump action
             Debug.Log("Thump called.");
             SimulateThump();
-        } else if (interaction.Equals("Reset called.")) 
-        {
+        } 
+        else if (interaction.Equals("Reset called.")) {
             // Simulate reset action
             Debug.Log("Reset Button was pressed.");
             SimulateReset();
-        } else if (interaction.Equals("Hammer Swing called."))
-        {
+        } 
+        else if (interaction.Equals("Hammer Swing called.")) {
             // Simulate Hammer Swing 
             Debug.Log("Hammer Swing called.");
-            SimulateHammerSwing();
+            ActivateHammerSwing();
         }
     }
 
@@ -157,25 +140,34 @@ public class NetworkManager : MonoBehaviour
 
         objectToActivate.Deactivate();
     }
-
-    private static void SimulateHammerSwing() {
-        if (Singleton.hammer != null)
-        {
-            Singleton.StartCoroutine(Singleton.ActivateHammerTemporarily(Singleton.hammer, 1.5f));
+    
+    // A static method that calls a method to activate the hammer if the hammer ref isn't null.
+    private static void ActivateHammerSwing() {
+        if (Singleton.hammer != null) {
+            ActivateHammer(Singleton.hammer);
         }
-        else
-        {
+        else {
             Debug.LogError("Hammer reference not set in NetworkManager.");
         }
     }
 
-    private IEnumerator ActivateHammerTemporarily(SwingHammer objectToActivate, float time)
-    {
+    // A method that calls a method to deactivate the hammer if the hammer ref isn't null.
+    private void DeactivateHammerSwing() {
+        if (Singleton.hammer != null) {
+            DeactivateHammer(Singleton.hammer);
+        }
+        else {
+            Debug.LogError("Hammer reference not set in NetworkManager.");
+        }
+    }
+
+    // A static method to activate the hammer.
+    private static void ActivateHammer(SwingHammer objectToActivate) {
         objectToActivate.Activate();
-
-        // Wait for duration
-        yield return new WaitForSeconds(time);
-
+    }
+    
+    // A method to deactivate the hammer.
+    private void DeactivateHammer(SwingHammer objectToActivate) {
         objectToActivate.Deactivate();
     }
 

@@ -100,9 +100,4 @@ public class UIManager : MonoBehaviour {
         connectUI.SetActive(false);
         controlsUI.SetActive(true);
     }
-
-    // Retrieves the user-entered IP address
-    public string GetUserIP() {
-        return _userIP;
-    }
 }

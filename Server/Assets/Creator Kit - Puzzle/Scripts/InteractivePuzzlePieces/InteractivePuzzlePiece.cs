@@ -21,28 +21,28 @@ public abstract class BaseInteractivePuzzlePiece : MonoBehaviour
     
     protected void FixedUpdate ()
     {
-        if (Input.GetKey (interactKey) && m_IsControlable)
-        {
-            ApplyActiveState ();
-        }
-        else
-        {
-            ApplyInactiveState ();
-        }
+        // if (Input.GetKey (interactKey) && m_IsControlable)
+        // {
+        //     ApplyActiveState ();
+        // }
+        // else
+        // {
+        //     ApplyInactiveState ();
+        // }
     }
     
     void Update()
     {
-        if (deactivateSound != null && Input.GetKeyUp(interactKey))
-        {
-            puzzleAudioSource.pitch = Random.Range(0.8f, 1.2f);
-            puzzleAudioSource.PlayOneShot(deactivateSound);
-        }
-        if (activateSound != null && Input.GetKeyDown(interactKey))
-        {
-            puzzleAudioSource.pitch = Random.Range(0.8f, 1.2f);
-            puzzleAudioSource.PlayOneShot(activateSound);
-        }
+        // if (deactivateSound != null && Input.GetKeyUp(interactKey))
+        // {
+        //     puzzleAudioSource.pitch = Random.Range(0.8f, 1.2f);
+        //     puzzleAudioSource.PlayOneShot(deactivateSound);
+        // }
+        // if (activateSound != null && Input.GetKeyDown(interactKey))
+        // {
+        //     puzzleAudioSource.pitch = Random.Range(0.8f, 1.2f);
+        //     puzzleAudioSource.PlayOneShot(activateSound);
+        // }
     }
 
     protected abstract void ApplyActiveState ();
