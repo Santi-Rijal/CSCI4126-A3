@@ -89,6 +89,7 @@ public class NetworkManager : MonoBehaviour
     private void ServerOnClientConnected(object sender, ServerConnectedEventArgs e) {
         // Instantiate or enable the player character
         GameObject player = Instantiate(playerPrefab);
+
         SimulateReset();
     }
 
