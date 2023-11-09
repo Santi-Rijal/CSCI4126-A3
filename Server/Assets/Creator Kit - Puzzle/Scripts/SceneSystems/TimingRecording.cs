@@ -16,7 +16,7 @@ public class TimingRecording : MonoBehaviour
     bool m_IsTiming;
     BaseInteractivePuzzlePiece[] m_PuzzlePieces;
 
-    void Awake ()
+    void OnEnable ()
     {
         m_PuzzlePieces = FindObjectsOfType<BaseInteractivePuzzlePiece> ();
         
@@ -48,6 +48,11 @@ public class TimingRecording : MonoBehaviour
     {
         m_IsTiming = false;
         StartCoroutine (CompleteLevelWithDelay (uiDelay));
+    }
+
+    public void Reset()
+    {
+        sceneCompletion.ReloadLevel();
     }
 
     IEnumerator CompleteLevelWithDelay (float delay)

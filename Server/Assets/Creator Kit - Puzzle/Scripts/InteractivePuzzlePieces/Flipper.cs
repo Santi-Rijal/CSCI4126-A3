@@ -23,4 +23,16 @@ public class Flipper : InteractivePuzzlePiece<HingeJoint>
     {
         physicsComponent.useMotor = false;
     }
+
+    // Public method to activate the flipper
+    public void Activate()
+    {
+        ApplyActiveState();
+    }
+
+    // Public method to deactivate the flipper
+    public void Deactivate()
+    {
+        ApplyInactiveState();
+    }
 }

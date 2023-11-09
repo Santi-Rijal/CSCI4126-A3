@@ -1,86 +1,107 @@
+/**
+ * UIManager.cs
+ * 
+ * Manages UI elements for network connection and user interactions within a Unity game.
+ * Handles displaying connection UI, responding to connection events, and processing user inputs.
+ *
+ * Authors: Santi Rijal, Adam Sarty
+ * Course: CSCI4126
+ * Assignment: 3
+ */
+
 using System;
 using Riptide;
 using TMPro;
 using UnityEngine;
 
-/**
- * Class to handle connect button click and player spawn.
- */
 public class UIManager : MonoBehaviour {
-    
-    private static UIManager _singleton;    // Singleton of this class.
-    
-    [SerializeField] private GameObject connectUI;  // Connection UI.
-    [SerializeField] private GameObject controlsUI;  // Controls UI.
-    [SerializeField] private TextMeshProUGUI error;  // Error text.
-    [SerializeField] private TMP_InputField inputField; // Input field for IP address.
+    private static UIManager _singleton;
+
+    [SerializeField] private GameObject connectUI;
+    [SerializeField] private GameObject controlsUI;
+    [SerializeField] private TextMeshProUGUI error;
+    [SerializeField] private TMP_InputField inputField;
 
     private string _userIP;
-    
-    // Create a new singleton if it already doesn't exists else destroy it.
+
     public static UIManager Singleton {
         get => _singleton;
-
         private set {
             if (_singleton == null) {
                 _singleton = value;
             }
             else if (_singleton != value) {
-                Debug.Log($"{nameof(UIManager)} instance already exists, destroying duplicate.");
-                Destroy(value);
+                Debug.Log($"{nameof(UIManager)} instance already exists, destroying object.");
+                Destroy(value.gameObject);
             }
         }
     }
-    
-    // Set the singleton.
+
     private void Awake() {
-        _singleton = this;
+        Singleton = this;
     }
 
     private void Start() {
-        NetworkManager.Singleton.Client.Disconnected += ClientOnDisconnected;
-        NetworkManager.Singleton.Client.ConnectionFailed += ClientOnConnectionFailed;
-        NetworkManager.Singleton.Client.Connected += ClientOnConnected;
+        // Subscribe to network events
+        SubscribeToNetworkEvents();
     }
 
-    // A subscription method for connected event.
+    private void SubscribeToNetworkEvents() {
+        if (NetworkManager.Singleton.Client != null) {
+            NetworkManager.Singleton.Client.Disconnected += ClientOnDisconnected;
+            NetworkManager.Singleton.Client.ConnectionFailed += ClientOnConnectionFailed;
+            NetworkManager.Singleton.Client.Connected += ClientOnConnected;
+        } else {
+            Debug.LogError("NetworkManager.Singleton.Client is not initialized!");
+        }
+    }
+
+    // Called when the client successfully connects
     private void ClientOnConnected(object sender, EventArgs e) {
-        
-        // Send a message indicating the users IP to the server.
-        // Message message = Message.Create(MessageSendMode.Reliable, ClientToServerId.name);
-        // message.Add(iP);
-        // NetworkManager.Singleton.Client.Send(message);
-        
-        connectUI.SetActive(false); // Hide connect UI screen.
-        controlsUI.SetActive(true); // Show controls UI screen.
+        SwitchToControlsUI();
     }
 
-    // A subscription method for failed to connect event.
+    // Called when a connection attempt fails
     private void ClientOnConnectionFailed(object sender, ConnectionFailedEventArgs e) {
         error.text = "Connection failed";
     }
 
-    // A subscription method for disconnect event.
+    // Called when the client gets disconnected
     private void ClientOnDisconnected(object sender, DisconnectedEventArgs e) {
         error.text = "Disconnected";
         BackToMain();
     }
 
-    // Method to handle connect button click.
+    // Invoked when the connect button is clicked
     public void ClickedConnect() {
-        _userIP = inputField.text;
-        
-        NetworkManager.Singleton.Connect(); // Try to connect to server.
-        error.text = "Connecting....";
-    }
-    
-    // If failed to connect or disconnected, show the connect screen UI.
-    public void BackToMain() {
-        connectUI.SetActive(true);  // Show connect screen.
-        controlsUI.SetActive(false); // hide controls UI screen.
+        AttemptConnection();
     }
 
-    // Get method for user IP.
+    // Handles the attempt to connect to the server
+    private void AttemptConnection() {
+        _userIP = inputField.text;
+
+        if (!string.IsNullOrEmpty(_userIP)) {
+            NetworkManager.Singleton.Connect(_userIP);
+            error.text = "Connecting...";
+        } else {
+            error.text = "Please enter a valid IP address.";
+        }
+    }
+
+    // Returns the UI to the main connection screen
+    public void BackToMain() {
+        connectUI.SetActive(true);
+        controlsUI.SetActive(false);
+    }
+
+    // Switches the UI to the control panel after connection
+    private void SwitchToControlsUI() {
+        connectUI.SetActive(false);
+        controlsUI.SetActive(true);
+    }
+
+    // Retrieves the user-entered IP address
     public string GetUserIP() {
         return _userIP;
     }

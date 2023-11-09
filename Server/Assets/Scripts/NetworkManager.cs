@@ -28,6 +28,13 @@ public enum ClientToServerId : ushort
 
 public class NetworkManager : MonoBehaviour
 {
+    public GameObject playerPrefab;
+    public GameObject timer;
+
+    [SerializeField] private Flipper flipper;
+    [SerializeField] private Flipper spoon;
+    [SerializeField] private SwingHammer hammer;
+
     // Singleton pattern for NetworkManager. Ensures only one instance exists.
     private static NetworkManager _singleton;
     public static NetworkManager Singleton
@@ -76,23 +83,35 @@ public class NetworkManager : MonoBehaviour
         Server = new Server();
         Server.Start(port, maxClientCount);
         
-        Server.MessageReceived += ServerOnMessageReceived;
         Server.ClientConnected += ServerOnClientConnected;
     }
 
     private void ServerOnClientConnected(object sender, ServerConnectedEventArgs e) {
-        // Spawn Character.
+        // Instantiate or enable the player character
+        GameObject player = Instantiate(playerPrefab);
+        SimulateReset();
     }
 
-    private void ServerOnMessageReceived(object sender, MessageReceivedEventArgs e) {
-        var message = e.Message.GetString();
+    [MessageHandler((ushort)1)]
+    private static void ServerOnMessageReceived(ushort fromClientID, Message message) 
+    {
+        var interaction = message.GetString();
 
-        if (message.Equals("Space Button clicked")) {
-            // Handle space button click.
-        }
-        
-        if (message.Equals("Reset Button clicked")) {
-            // Handle reset button click.
+        if (interaction.Equals("Thump called.")) 
+        {
+            // Simulate thump action
+            Debug.Log("Thump called.");
+            SimulateThump();
+        } else if (interaction.Equals("Reset called.")) 
+        {
+            // Simulate reset action
+            Debug.Log("Reset Button was pressed.");
+            SimulateReset();
+        } else if (interaction.Equals("Hammer Swing called."))
+        {
+            // Simulate Hammer Swing 
+            Debug.Log("Hammer Swing called.");
+            SimulateHammerSwing();
         }
     }
 
@@ -108,11 +127,73 @@ public class NetworkManager : MonoBehaviour
         Server.Stop();
     }
 
-    // Message handler for type of interaction message from client
-    [MessageHandler((ushort)1)]
-    private static void HandleTypeMessageFromServer(ushort fromClientID, Message message)
+    private static void SimulateThump() {
+        if (Singleton.flipper != null)
+        {
+            Singleton.StartCoroutine(Singleton.ActivateFlipperTemporarily(Singleton.flipper, 1f));
+        }
+        else
+        {
+            Debug.LogError("Flipper reference not set in NetworkManager.");
+        }
+
+        if (Singleton.spoon != null)
+        {
+            Singleton.StartCoroutine(Singleton.ActivateFlipperTemporarily(Singleton.spoon, 1f));
+        }
+        else
+        {
+            Debug.LogError("Spoon reference not set in NetworkManager.");
+        }
+    }
+
+    private IEnumerator ActivateFlipperTemporarily(Flipper objectToActivate, float time)
     {
-        // Extracting message content
-        int type = message.GetInt();
+        objectToActivate.Activate();
+
+        // Wait for duration
+        yield return new WaitForSeconds(time);
+
+        objectToActivate.Deactivate();
+    }
+
+    private static void SimulateHammerSwing() {
+        if (Singleton.hammer != null)
+        {
+            Singleton.StartCoroutine(Singleton.ActivateHammerTemporarily(Singleton.hammer, 1.5f));
+        }
+        else
+        {
+            Debug.LogError("Hammer reference not set in NetworkManager.");
+        }
+    }
+
+    private IEnumerator ActivateHammerTemporarily(SwingHammer objectToActivate, float time)
+    {
+        objectToActivate.Activate();
+
+        // Wait for duration
+        yield return new WaitForSeconds(time);
+
+        objectToActivate.Deactivate();
+    }
+
+    private static void SimulateReset() {
+        if (Singleton.timer != null)
+        {
+            TimingRecording timingRecording = Singleton.timer.GetComponent<TimingRecording>();
+            if (timingRecording != null)
+            {
+                timingRecording.Reset();
+            }
+            else
+            {
+                Debug.LogError("TimingRecording component not found on the timer GameObject.");
+            }
+        }
+        else
+        {
+            Debug.LogError("Timer GameObject is not set in the NetworkManager.");
+        }
     }
 }

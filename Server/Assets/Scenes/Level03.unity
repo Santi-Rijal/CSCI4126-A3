@@ -1129,6 +1129,12 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 410474532}
   m_SourcePrefab: {fileID: 100100000, guid: 77ca93046bc784e4690b55060014cd17, type: 3}
+--- !u!1 &242675080 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8781251346480394810, guid: 3aee8a1cad05205468b76c9feb6d5d54,
+    type: 3}
+  m_PrefabInstance: {fileID: 8781251347253250103}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &252514251 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 384889229971728208, guid: ef838aad987e6224cb9674bda577603a,
@@ -6354,6 +6360,12 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1092111503}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1253170074 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8708705042030647249, guid: 47a7dae5249c1da449a9c374793537ba,
+    type: 3}
+  m_PrefabInstance: {fileID: 8708705042657527867}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1255590747 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 100000, guid: 77ca93046bc784e4690b55060014cd17,
@@ -6992,7 +7004,7 @@ MonoBehaviour:
     type: 3}
   m_PrefabInstance: {fileID: 8781251347253250103}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 242675080}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 54d3e3a06ede8144cba84bbc8c30e477, type: 3}
@@ -9829,8 +9841,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89bfa5c39ee1f4dae961a0fbc014ffdc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerPrefab: {fileID: 1253170074}
+  timer: {fileID: 242675080}
   port: 7878
-  maxClientCount: 2
+  maxClientCount: 1
 --- !u!4 &2105185780
 Transform:
   m_ObjectHideFlags: 0
@@ -10632,6 +10646,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Marble
       objectReference: {fileID: 0}
+    - target: {fileID: 8708705042030647249, guid: 47a7dae5249c1da449a9c374793537ba,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8708705042030647252, guid: 47a7dae5249c1da449a9c374793537ba,
         type: 3}
       propertyPath: m_RootOrder
@@ -10751,6 +10770,11 @@ PrefabInstance:
       propertyPath: startingMarble
       value: 
       objectReference: {fileID: 715300843}
+    - target: {fileID: 8781251346480394810, guid: 3aee8a1cad05205468b76c9feb6d5d54,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8781251347186192185, guid: 3aee8a1cad05205468b76c9feb6d5d54,
         type: 3}
       propertyPath: m_AnchoredPosition.y

@@ -21,4 +21,16 @@ public class SwingHammer : InteractivePuzzlePiece<HingeJoint>
     {
         physicsComponent.useMotor = true;
     }
+
+    // Public method to activate the hammer
+    public void Activate()
+    {
+        ApplyActiveState();
+    }
+
+    // Public method to deactivate the hammer
+    public void Deactivate()
+    {
+        ApplyInactiveState();
+    }
 }

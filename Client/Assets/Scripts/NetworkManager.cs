@@ -1,79 +1,85 @@
+/**
+ * NetworkManager.cs
+ * 
+ * Handles the client-side network connection in a Unity game, managing the client instance and its events.
+ *
+ * Authors: Santi Rijal, Adam Sarty
+ * Course: CSCI4126
+ * Assignment: 3
+ */
+
 using System;
 using Riptide;
 using Riptide.Utils;
 using UnityEngine;
 
-/**
- * A enum client to server id.
- */
-public enum ClientToServerId : ushort {
-    name = 1,
-}
-
-/**
- * Class to manage the connection on the client side.
- */
 public class NetworkManager : MonoBehaviour {
+    private static NetworkManager _singleton;
+    public Client Client { get; private set; }
 
-    private static NetworkManager _singleton;   // Singleton of this class.
+    [SerializeField] private ushort port;
 
-    // Create a new singleton if it already doesn't exists else destroy it.
     public static NetworkManager Singleton {
         get => _singleton;
-
         private set {
             if (_singleton == null) {
                 _singleton = value;
-            }
-            else if (_singleton != value) {
+            } else if (_singleton != value) {
                 Debug.Log($"{nameof(NetworkManager)} instance already exists, destroying duplicate.");
-                Destroy(value);
+                Destroy(value.gameObject);
             }
         }
     }
 
-    public Client Client { get; private set; }  // Client get and set methods.
-
-    [SerializeField] private ushort port;   // Port to run on.
-
-    // Set singleton.
     private void Awake() {
-        _singleton = this;
+        Singleton = this;
+        InitializeClient();
+    }
+
+    private void InitializeClient() {
+        Client = new Client();
+        RiptideLogger.Initialize(Debug.Log, Debug.Log, Debug.LogWarning, Debug.LogError, false);
     }
 
     private void Start() {
-        // Initialize riptide logs.
-        RiptideLogger.Initialize(Debug.Log, Debug.Log, Debug.LogWarning, Debug.LogError, false);
-
-        Client = new Client();  // Create a new client.
-
-        Client.ConnectionFailed += FailedToConnect; // Subscribe to connect to failed event.
+        // Subscribe to client events
+        Client.ConnectionFailed += FailedToConnect;
     }
 
     private void FixedUpdate() {
-        Client.Update();    // Call the client's update method at a fixed update.
+        // Update the client
+        Client.Update();
     }
 
-    // Method to disconnect client when application quits.
     private void OnApplicationQuit() {
+        // Ensure the client disconnects on application quit
         Client.Disconnect();
     }
 
-    // Method to connect client.
-    public void Connect() {
-        var ip = UIManager.Singleton.GetUserIP(); // Get user ip from UI.
-        
-        Client.Connect($"{ip}:{port}"); // Call the connect method of client with the ip and port.
+    // Initiates a connection to the server with the provided IP
+    public void Connect(string ip) {
+        Client.Connect($"{ip}:{port}");
     }
 
-    // A subscription method for failed to connect event.
+    // Callback for when the connection attempt fails
     private void FailedToConnect(object sender, EventArgs e) {
-        // Send failed to connect message to server.
-        Message message = Message.Create(MessageSendMode.Reliable, ClientToServerId.name);
+        NotifyConnectionFailure();
+    }
+
+    // Notifies the UI manager of connection failure and logs the event
+    private void NotifyConnectionFailure() {
+        SendConnectionFailureMessage();
+        UIManager.Singleton.BackToMain();
+    }
+
+    // Sends a connection failure message to the server
+    private void SendConnectionFailureMessage() {
+        Message message = Message.Create(MessageSendMode.Reliable, ClientToServerId.player);
         message.Add("Failed to connect");
         Client.Send(message);
-        
-        UIManager.Singleton.BackToMain();   // Display the connect screen.
     }
-    
+}
+
+public enum ClientToServerId : ushort {
+    player = 1,
 }

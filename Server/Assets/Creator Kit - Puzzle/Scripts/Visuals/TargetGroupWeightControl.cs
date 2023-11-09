@@ -22,7 +22,7 @@ public class TargetGroupWeightControl : MonoBehaviour
     FloatParameter m_FocusDistanceParameter;
     FloatParameter m_ApertureParameter;
 
-    void Awake ()
+    void OnEnable ()
     {
         m_Camera = FindObjectOfType<Camera> ().transform;
         m_TargetGroup = GetComponent<CinemachineTargetGroup> ();
