@@ -5,11 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cff0249b-8d9f-4383-83bd-4005f950e632" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../Client/Assets/Scenes/Client.unity" beforeDir="false" afterPath="$PROJECT_DIR$/../Client/Assets/Scenes/Client.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Client/Assets/Scripts/UIManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Client/Assets/Scripts/UIManager.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Server/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Server/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Creator Kit - Puzzle/Scripts/InteractivePuzzlePieces/InteractivePuzzlePiece.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Creator Kit - Puzzle/Scripts/InteractivePuzzlePieces/InteractivePuzzlePiece.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Level03.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Level03.unity" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/NetworkManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NetworkManager.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

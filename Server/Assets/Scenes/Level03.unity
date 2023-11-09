@@ -10550,7 +10550,8 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Targets.Array.data[0].target
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 5914001538123614648, guid: 4841c1a22b2bf4d0ca0cfce675d90e24,
+        type: 3}
     - target: {fileID: 6619908265563234158, guid: 8ae78060cdd51234abc802a3e735b140,
         type: 3}
       propertyPath: m_Targets.Array.data[1].target
