@@ -1129,12 +1129,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 410474532}
   m_SourcePrefab: {fileID: 100100000, guid: 77ca93046bc784e4690b55060014cd17, type: 3}
---- !u!1 &242675080 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8781251346480394810, guid: 3aee8a1cad05205468b76c9feb6d5d54,
-    type: 3}
-  m_PrefabInstance: {fileID: 8781251347253250103}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &252514251 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 384889229971728208, guid: ef838aad987e6224cb9674bda577603a,
@@ -7047,7 +7041,7 @@ MonoBehaviour:
     type: 3}
   m_PrefabInstance: {fileID: 8781251347253250103}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 242675080}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 54d3e3a06ede8144cba84bbc8c30e477, type: 3}
@@ -9886,8 +9880,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 8708705042030647249, guid: 47a7dae5249c1da449a9c374793537ba,
     type: 3}
-  timer: {fileID: 242675080}
   spawnPoint: {fileID: 530003928}
+  timer: {fileID: 1376860686}
   flipper: {fileID: 1191712016}
   spoon: {fileID: 713739374}
   hammer: {fileID: 1279844194}

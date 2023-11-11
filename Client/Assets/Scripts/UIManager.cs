@@ -4,7 +4,7 @@
  * Manages UI elements for network connection and user interactions within a Unity game.
  * Handles displaying connection UI, responding to connection events, and processing user inputs.
  *
- * Authors: Santi Rijal, Adam Sarty
+ * Authors: Santi Rijal
  * Course: CSCI4126
  * Assignment: 3
  */

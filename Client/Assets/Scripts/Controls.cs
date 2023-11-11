@@ -6,7 +6,7 @@ using Riptide;
  * 
  * Handles player control inputs for a Unity game, sending corresponding messages to the server when the 'Space' button is Clicked or released.
  * 
- * Authors: Santi Rijal, Adam Sarty
+ * Authors: Santi Rijal
  * Course: CSCI4126
  * Assignment: 3
  */
@@ -23,12 +23,6 @@ public class Controls : MonoBehaviour {
     public void SwingHammer() {
         Debug.Log("Hammer Swing clicked.");
         SendButtonMessage(ClientToServerId.player, "Hammer Swing called.");
-    }
-
-     // Called when the 'Reset' button is clicked
-    public void Reset() {
-        Debug.Log("Reset clicked.");
-        SendButtonMessage(ClientToServerId.player, "Reset called.");
     }
 
     // Sends a message to the server indicating which button was interacted with

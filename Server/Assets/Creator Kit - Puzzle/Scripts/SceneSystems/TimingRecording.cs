@@ -16,38 +16,62 @@ public class TimingRecording : MonoBehaviour
     bool m_IsTiming;
     BaseInteractivePuzzlePiece[] m_PuzzlePieces;
 
-    void OnEnable ()
+    void OnEnable()
     {
-        m_PuzzlePieces = FindObjectsOfType<BaseInteractivePuzzlePiece> ();
+        m_PuzzlePieces = FindObjectsOfType<BaseInteractivePuzzlePiece>();
         
         enableControlAction = EnableControl;
     }
 
-    void EnableControl ()
+    void Start()
     {
-        startingMarble.isKinematic = false;
-        m_IsTiming = true;
-        for (int i = 0; i < m_PuzzlePieces.Length; i++)
+        // Delay the execution to ensure the player has been instantiated
+        StartCoroutine(WaitAndInitialize());
+    }
+
+    IEnumerator WaitAndInitialize()
+    {
+        // Wait for a frame to ensure all Start methods have run
+        yield return null;
+
+        // Access NetworkManager and get the player instance
+        GameObject marbleInstance = NetworkManager.Singleton.GetCurrentPlayerInstance();
+        if (marbleInstance != null)
         {
-            m_PuzzlePieces[i].EnableControl ();
+            startingMarble = marbleInstance.GetComponent<Rigidbody>();
+            startingMarble.isKinematic = false;
+        }
+        else
+        {
+            Debug.LogError("Marble prefab not found in the scene.");
         }
     }
 
-    void Update ()
+    void EnableControl()
     {
-        if(m_IsTiming)
-            timer += Time.deltaTime;
-
-        textMesh.text = timer.ToString ("0.00");
-        
-        if(Input.GetKeyDown (resetKeyCode))
-            sceneCompletion.ReloadLevel ();
+        // The rest of your control logic
+        m_IsTiming = true;
+        foreach (var piece in m_PuzzlePieces)
+        {
+            piece.EnableControl();
+        }
     }
 
-    public void GoalReached (float uiDelay)
+    void Update()
+    {
+        if (m_IsTiming)
+            timer += Time.deltaTime;
+
+        textMesh.text = timer.ToString("0.00");
+        
+        if (Input.GetKeyDown(resetKeyCode))
+            sceneCompletion.ReloadLevel();
+    }
+
+    public void GoalReached(float uiDelay)
     {
         m_IsTiming = false;
-        StartCoroutine (CompleteLevelWithDelay (uiDelay));
+        StartCoroutine(CompleteLevelWithDelay(uiDelay));
     }
 
     public void Reset()
@@ -55,9 +79,9 @@ public class TimingRecording : MonoBehaviour
         sceneCompletion.ReloadLevel();
     }
 
-    IEnumerator CompleteLevelWithDelay (float delay)
+    IEnumerator CompleteLevelWithDelay(float delay)
     {
-        yield return new WaitForSeconds (delay);
-        sceneCompletion.CompleteLevel (timer);
+        yield return new WaitForSeconds(delay);
+        sceneCompletion.CompleteLevel(timer);
     }
 }

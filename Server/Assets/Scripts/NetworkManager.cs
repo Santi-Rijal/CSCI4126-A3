@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 using Riptide;
 using Riptide.Utils;
 
@@ -14,179 +15,236 @@ using Riptide.Utils;
  * -----------------------------------
  */
 
-public class NetworkManager : MonoBehaviour {
-    
-    public GameObject playerPrefab;
-    public GameObject timer;
-    public Transform spawnPoint;
+public class NetworkManager : MonoBehaviour 
+{
+    public GameObject playerPrefab; // Prefab for the player object
+    public Transform spawnPoint; // Spawn point for player instantiation
 
+    // Serialized fields for various game components
+    [SerializeField] private TimingRecording timer;
     [SerializeField] private Flipper flipper;
     [SerializeField] private Flipper spoon;
     [SerializeField] private SwingHammer hammer;
 
-    // Singleton pattern for NetworkManager. Ensures only one instance exists.
+    // Singleton instance for managing network operations
     private static NetworkManager _singleton;
     public static NetworkManager Singleton {
         get => _singleton;
-        
         private set {
-            if (_singleton == null) {
+            if (_singleton == null) 
+            {
                 _singleton = value;
             }
-            else if (_singleton != value) {
+            else if (_singleton != value) 
+            {
                 Debug.Log($"{nameof(NetworkManager)} instance already exists, destroying object!");
                 Destroy(value);
             }
         }
     }
 
-    // Serialized fields for Unity's Inspector
-    [SerializeField] private ushort port;               // Port number the server listens to
-    [SerializeField] private ushort maxClientCount;     // Maximum number of clients server can handle
+    // Network configuration settings
+    [SerializeField] private ushort port;             
+    [SerializeField] private ushort maxClientCount;   
+    public Server Server { get; private set; }        
 
-    // Property to get the Server instance
-    public Server Server { get; private set; }
+    // Reference to the current player instance
+    private GameObject currentPlayerInstance;         
 
-    // Set Singleton instance on Awake (before Start method)
-    private void Awake() {
-        Singleton = this;
-        DeactivateHammerSwing();
+    // Reference to the Cinemachine camera target group
+    [SerializeField] private CinemachineTargetGroup cinemachineTargetGroup;
+
+    private void Awake() 
+    {
+        // Singleton pattern with DontDestroyOnLoad to persist across scene changes
+        if (_singleton == null) 
+        {
+            _singleton = this;
+            DontDestroyOnLoad(gameObject);
+            DeactivateHammerSwing();
+        }
+        else if (_singleton != this) 
+        {
+            Debug.Log($"{nameof(NetworkManager)} instance already exists, destroying object!");
+            Destroy(gameObject);
+        }
     }
 
-    // Initialization method called on Start
-    private void Start() {
-        // Disable vertical sync and set target frame rate to 30fps
+    private void Start() 
+    {
+        // Initial setup for the server and networking
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = 30;
-
-        // Initialize Riptide Logger with various Debug log methods
         RiptideLogger.Initialize(Debug.Log, Debug.Log, Debug.LogWarning, Debug.LogError, false);
         Console.Title = "Server";
         Console.Clear();
         Application.SetStackTraceLogType(UnityEngine.LogType.Log, StackTraceLogType.None);
         RiptideLogger.Initialize(Debug.Log, true);
 
-        // Instantiate and start the server
         Server = new Server();
         Server.Start(port, maxClientCount);
-        
         Server.ClientConnected += ServerOnClientConnected;
     }
 
-    private void ServerOnClientConnected(object sender, ServerConnectedEventArgs e) {
-        // Instantiate or enable the player character
-        Instantiate(playerPrefab, spawnPoint.position, spawnPoint.rotation);
+    // Called when a client is connected to the server
+    public void ServerOnClientConnected(object sender, ServerConnectedEventArgs e) 
+    {
+        CreatePlayerInstance();
     }
-    
+
+    // Handles different network messages received from clients
     [MessageHandler((ushort)1)]
-    private static void ServerOnMessageReceived(ushort fromClientID, Message message) {
+    private static void ServerOnMessageReceived(ushort fromClientID, Message message) 
+    {
         var interaction = message.GetString();
 
-        if (interaction.Equals("Thump called.")) {
-            // Simulate thump action
+        if (interaction.Equals("Thump called.")) 
+        {
             Debug.Log("Thump called.");
             SimulateThump();
-        } 
-        else if (interaction.Equals("Reset called.")) {
-            // Simulate reset action
-            Debug.Log("Reset Button was pressed.");
-            SimulateReset();
-        } 
-        else if (interaction.Equals("Hammer Swing called.")) {
-            // Simulate Hammer Swing 
+        }
+        else if (interaction.Equals("Hammer Swing called.")) 
+        {
             Debug.Log("Hammer Swing called.");
             ActivateHammerSwing();
         }
     }
 
-    // Update server logic on FixedUpdate
-    private void FixedUpdate()
+    private void FixedUpdate() 
     {
+        // Regular update call for server operations
         Server.Update();
     }
 
-    // Cleanup when the application quits
-    private void OnApplicationQuit()
+    private void OnApplicationQuit() 
     {
+        // Stops the server when the application is quitting
         Server.Stop();
     }
 
-    private static void SimulateThump() {
-        if (Singleton.flipper != null)
+    // Simulates the 'Thump' action in the game
+    private static void SimulateThump() 
+    {
+        if (Singleton.flipper != null) 
         {
             Singleton.StartCoroutine(Singleton.ActivateFlipperTemporarily(Singleton.flipper, 1f));
-        }
-        else
-        {
+        } else {
             Debug.LogError("Flipper reference not set in NetworkManager.");
         }
 
-        if (Singleton.spoon != null)
+        if (Singleton.spoon != null) 
         {
             Singleton.StartCoroutine(Singleton.ActivateFlipperTemporarily(Singleton.spoon, 1f));
-        }
-        else
-        {
+        } else {
             Debug.LogError("Spoon reference not set in NetworkManager.");
         }
     }
 
-    private IEnumerator ActivateFlipperTemporarily(Flipper objectToActivate, float time)
+    // Activates a flipper for a temporary duration
+    private IEnumerator ActivateFlipperTemporarily(Flipper objectToActivate, float time) 
     {
         objectToActivate.Activate();
-
-        // Wait for duration
         yield return new WaitForSeconds(time);
-
         objectToActivate.Deactivate();
     }
-    
-    // A static method that calls a method to activate the hammer if the hammer ref isn't null.
-    private static void ActivateHammerSwing() {
-        if (Singleton.hammer != null) {
+
+    // Activates the hammer swing action
+    private static void ActivateHammerSwing() 
+    {
+        if (Singleton.hammer != null) 
+        {
             ActivateHammer(Singleton.hammer);
-        }
-        else {
+        } else 
+        {
             Debug.LogError("Hammer reference not set in NetworkManager.");
         }
     }
 
-    // A method that calls a method to deactivate the hammer if the hammer ref isn't null.
-    private void DeactivateHammerSwing() {
-        if (Singleton.hammer != null) {
+    // Deactivates the hammer swing action
+    private void DeactivateHammerSwing() 
+    {
+        if (Singleton.hammer != null) 
+        {
             DeactivateHammer(Singleton.hammer);
-        }
-        else {
+        } else 
+        {
             Debug.LogError("Hammer reference not set in NetworkManager.");
         }
     }
 
-    // A static method to activate the hammer.
-    private static void ActivateHammer(SwingHammer objectToActivate) {
+    // Activates the specified hammer
+    private static void ActivateHammer(SwingHammer objectToActivate) 
+    {
         objectToActivate.Activate();
     }
     
-    // A method to deactivate the hammer.
-    private void DeactivateHammer(SwingHammer objectToActivate) {
+    // Deactivates the specified hammer
+    private void DeactivateHammer(SwingHammer objectToActivate) 
+    {
         objectToActivate.Deactivate();
     }
 
-    private static void SimulateReset() {
-        if (Singleton.timer != null)
+    // Creates a new player instance in the game
+    public void CreatePlayerInstance() 
+    {
+        CreatePlayer(this);
+    }
+
+    // Public method to get the current player instance
+    public GameObject GetCurrentPlayerInstance() 
+    {
+        return currentPlayerInstance;
+    }
+
+    // Static method for creating a player instance
+    public static void CreatePlayer(NetworkManager instance) 
+    {
+        if (instance.currentPlayerInstance != null) 
         {
-            TimingRecording timingRecording = Singleton.timer.GetComponent<TimingRecording>();
-            if (timingRecording != null)
+            instance.RemoveFromCinemachineGroup(instance.currentPlayerInstance);
+            Destroy(instance.currentPlayerInstance);
+        }
+        instance.currentPlayerInstance = Instantiate(instance.playerPrefab, instance.spawnPoint.position, instance.spawnPoint.rotation);
+        instance.currentPlayerInstance.tag = "Player";
+
+        instance.AddToCinemachineGroup(instance.currentPlayerInstance, 1, 2); // Adjust weight and radius as needed
+    }
+
+
+    // Adds a new target to the Cinemachine camera group
+    public void AddToCinemachineGroup(GameObject newTarget, float weight, float radius) 
+    {
+        if (cinemachineTargetGroup != null && newTarget != null)
+        {
+            CinemachineTargetGroup.Target target = new CinemachineTargetGroup.Target
             {
-                timingRecording.Reset();
-            }
-            else
-            {
-                Debug.LogError("TimingRecording component not found on the timer GameObject.");
-            }
+                target = newTarget.transform,
+                weight = weight,
+                radius = radius
+            };
+
+            List<CinemachineTargetGroup.Target> targetsList = new List<CinemachineTargetGroup.Target>(cinemachineTargetGroup.m_Targets);
+            targetsList.Add(target);
+            cinemachineTargetGroup.m_Targets = targetsList.ToArray();
         }
         else
         {
-            Debug.LogError("Timer GameObject is not set in the NetworkManager.");
+            Debug.LogError("CinemachineTargetGroup or target is null.");
+        }
+    }
+
+    // Removes a target from the Cinemachine camera group
+    public void RemoveFromCinemachineGroup(GameObject targetToRemove) 
+    {
+        if (cinemachineTargetGroup != null && targetToRemove != null)
+        {
+            List<CinemachineTargetGroup.Target> targetsList = new List<CinemachineTargetGroup.Target>(cinemachineTargetGroup.m_Targets);
+            targetsList.RemoveAll(target => target.target == targetToRemove.transform);
+            cinemachineTargetGroup.m_Targets = targetsList.ToArray();
+        }
+        else
+        {
+            Debug.LogError("CinemachineTargetGroup or target is null.");
         }
     }
 }

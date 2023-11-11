@@ -3,7 +3,7 @@
  * 
  * Handles the client-side network connection in a Unity game, managing the client instance and its events.
  *
- * Authors: Santi Rijal, Adam Sarty
+ * Authors: Santi Rijal
  * Course: CSCI4126
  * Assignment: 3
  */
