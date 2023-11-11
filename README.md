@@ -1,4 +1,4 @@
-<!--- The following README.md sample file was adapted from https://gist.github.com/PurpleBooth/109311bb0361f32d87a2#file-readme-template-md by Adam Sarty for academic use ---> 
+<!--- The following README.md sample file was adapted from https://gist.github.com/PurpleBooth/109311bb0361f32d87a2#file-readme-template-md by Adam Sarty and Santi Rijal for academic use ---> 
 
 # Assignment 3
 
@@ -17,7 +17,7 @@ To get started, launch the application on your device. You'll need to enter your
 
 ## Server Instructions
 
-Begin by starting the application on your device. Level 3 will automatically load. As soon as a client connects, several things will happen simultaneously: a timer will appear in the top left corner of your screen, your player character will be created, and the camera will start following your movements. To interact with the client, use 'Swing Hammer' and then 'Thump.' These actions will activate the Flipper and Spoon mechanisms, respectively, and are essential for progressing through the game's challenges.
+Begin by starting the application on your device. Level 3 will automatically load. As soon as a client connects, several things will happen simultaneously: a timer will start in the top left corner of your screen, your player character will be created, and the camera will start following your movements. To interact with the client, use 'Swing Hammer' and then 'Thump.' These actions will activate the Flipper and Spoon mechanisms, respectively, and are essential for progressing through the game's challenges.
 
 ## Sources Used
 
